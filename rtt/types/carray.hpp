@@ -96,7 +96,11 @@ namespace RTT
              * the original data.
              * @param orig
              */
+            #if BOOST_VERSION <= 105800
             carray( boost::serialization::array<T> const& orig)
+            #else
+            carray( boost::serialization::array_wrapper<T> const& orig)
+            #endif
             : m_t( orig.address() ), m_element_count( orig.count() ) {
                 if (m_element_count == 0)
                     m_t = 0;
@@ -162,7 +166,11 @@ namespace RTT
              * @param orig
              */
             template <class OtherT>
+            #if BOOST_VERSION <= 105800
             const carray<T>& operator=( boost::serialization::array<OtherT> const& orig ) {
+            #else
+            const carray<T>& operator=( boost::serialization::array_wrapper<OtherT> const& orig ) {
+            #endif
                 if (orig.address() != m_t)
                     for(std::size_t i = 0; i != orig.count() && i != count(); ++i)
                         m_t[i] = orig.address()[i];

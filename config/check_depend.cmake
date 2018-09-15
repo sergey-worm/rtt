@@ -114,8 +114,8 @@ endif(XERCES_FOUND)
 message("Orocos target is ${OROCOS_TARGET}")
 string(TOUPPER ${OROCOS_TARGET} OROCOS_TARGET_CAP)
 
-if ( NOT ";lxrt;gnulinux;xenomai;macosx;win32;" MATCHES ".*;${OROCOS_TARGET};.*")
-  message( FATAL_ERROR "OROCOS_TARGET=${OROCOS_TARGET} is an unkown target. Please use one of lxrt;gnulinux;xenomai;macosx;win32.")
+if ( NOT ";lxrt;gnulinux;xenomai;macosx;win32;wrmos;" MATCHES ".*;${OROCOS_TARGET};.*")
+  message( FATAL_ERROR "OROCOS_TARGET=${OROCOS_TARGET} is an unkown target. Please use one of lxrt;gnulinux;xenomai;macosx;win32;wrmos.")
 endif()
 
 # Setup flags for RTAI/LXRT
@@ -182,7 +182,7 @@ if(OROCOS_TARGET STREQUAL "gnulinux")
   list(APPEND OROCOS-RTT_INCLUDE_DIRS ${PTHREAD_INCLUDE_DIRS})
   list(APPEND OROCOS-RTT_USER_LINK_LIBS ${PTHREAD_LIBRARIES} rt) # For libraries used in inline (fosi/template) code.
 
-  list(APPEND OROCOS-RTT_LIBRARIES ${PTHREAD_LIBRARIES} rt dl) 
+  list(APPEND OROCOS-RTT_LIBRARIES ${PTHREAD_LIBRARIES} rt dl)
   list(APPEND OROCOS-RTT_DEFINITIONS "OROCOS_TARGET=${OROCOS_TARGET}") 
 else()
   set(OROPKG_OS_GNULINUX FALSE CACHE INTERNAL "" FORCE)
@@ -273,6 +273,22 @@ if(OROCOS_TARGET STREQUAL "win32")
 else(OROCOS_TARGET STREQUAL "win32")
   set(OROPKG_OS_WIN32 FALSE CACHE INTERNAL "" FORCE)
 endif(OROCOS_TARGET STREQUAL "win32")
+
+
+# Setup flags for WrmOS
+if(OROCOS_TARGET STREQUAL "wrmos")
+  set(OROPKG_OS_WRMOS TRUE CACHE INTERNAL "This variable is exported to the rtt-config.h file to expose our target choice to the code." FORCE)
+  add_definitions(-Wall)
+  list(APPEND OROCOS-RTT_INCLUDE_DIRS ${WRMOS_INCDIRS})
+  list(APPEND OROCOS-RTT_LIBRARIES atomic -Wl,--start-group ${WRMOS_LIBS} -Wl,--end-group)
+  list(APPEND OROCOS-RTT_DEFINITIONS "OROCOS_TARGET=${OROCOS_TARGET}")
+  message("Turning BUILD_STATIC ON for WrmOS.")
+  set(FORCE_BUILD_STATIC ON CACHE INTERNAL "Forces to build Orocos RTT as a static library (forced to ON by WrmOS)" FORCE)
+  set(BUILD_STATIC ON CACHE BOOL "Build Orocos RTT as a static library (forced to ON by WrmOS)" FORCE)
+else()
+  set(OROPKG_OS_WRMOS FALSE CACHE INTERNAL "" FORCE)
+endif()
+
 
 if( NOT OROCOS-RTT_DEFINITIONS )
   message(FATAL_ERROR "No suitable OROCOS_TARGET found. Please check your setup or provide additional search paths to cmake.")

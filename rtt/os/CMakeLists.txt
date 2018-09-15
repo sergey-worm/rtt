@@ -11,6 +11,7 @@ ADD_SUBDIRECTORY( xenomai )
 ADD_SUBDIRECTORY( ecos )
 ADD_SUBDIRECTORY( macosx )
 ADD_SUBDIRECTORY( win32 )
+ADD_SUBDIRECTORY( wrmos )
 
 # Supported Hardware
 ADD_SUBDIRECTORY( oro_i386 )
